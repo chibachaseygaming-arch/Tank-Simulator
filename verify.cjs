@@ -41,4 +41,9 @@ run('start();cam=0;keys.add("d");update(1/60);keys.clear();draw()');
 assert.ok(Math.abs(run('player.x'))<Math.abs(run('player.z')),'Movement follows hull through the turn');
 assert.ok(run('faces.every(f=>f.pts.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&Number.isFinite(p.d)))'),'Detailed mesh vertices remain finite');
 console.log('PASS: gradual steering, target settling, angle wrapping, hull-aligned movement and detailed geometry.');
+run('faces=[];tank(player);globalThis.playerFaces=faces.length;faces=[];tank(player,true)');
+assert.ok(run('faces.length<playerFaces*.4'),'Enemy geometry stays substantially cheaper than the player');
+assert.equal(run('visible(player.x+10000,player.z+10000)'),false,'Offscreen tanks are culled');
+assert.equal(run('shadeColor("#ffffff",1)'),'rgb(255,255,255)');
+console.log('PASS: enemy geometry budget, offscreen culling and cached shading.');
 
