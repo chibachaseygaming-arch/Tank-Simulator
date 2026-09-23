@@ -32,10 +32,19 @@ function spawn(){const a=Math.random()*Math.PI*2,r=25+Math.random()*12;enemies.p
 function burst(x,z,color,n=16){for(let i=0;i<n;i++)particles.push({x,z,y:.8,vx:(Math.random()-.5)*9,vz:(Math.random()-.5)*9,vy:Math.random()*8,life:.4+Math.random()*.5,color});}
 function fire(t,enemy=false){t.recoil=1;const count=enemy?1:player.multi;for(let i=0;i<count;i++){const a=t.t+(i-(count-1)/2)*.11;shells.push({x:t.x+Math.sin(a)*3.5,z:t.z+Math.cos(a)*3.5,vx:Math.sin(a)*(enemy?15:37),vz:Math.cos(a)*(enemy?15:37),life:2.5,enemy});}burst(t.x+Math.sin(t.t)*3.5,t.z+Math.cos(t.t)*3.5,'#ffd37a',4);}
 function smoothAngle(current,target,dt,speed=12){return current+Math.atan2(Math.sin(target-current),Math.cos(target-current))*(1-Math.exp(-speed*dt));}
+// Acceleration-limited steering follows the shortest arc, without snapping at +/-pi.
+function steerTank(t,target,dt){
+ const error=Math.atan2(Math.sin(target-t.a),Math.cos(target-t.a));
+ const desired=Math.max(-2.4,Math.min(2.4,error*4));
+ const old=t.turnVelocity||0;
+ t.turnVelocity=old+(desired-old)*(1-Math.exp(-8*dt));
+ const step=t.turnVelocity*dt;
+ if(Math.abs(step)>Math.abs(error)&&step*error>=0){t.a+=error;t.turnVelocity=0;}else t.a+=step;
+}
 function update(dt){
 const movingTanks=[player,...enemies];
 for(const t of movingTanks){t.previousMotion={x:t.x,z:t.z,a:t.a};t.recoil=Math.max(0,(t.recoil||0)-dt/0.24);}
-time+=dt;boostCD=Math.max(0,boostCD-dt);boostTime=Math.max(0,boostTime-dt);cam+=(Number(keys.has('e'))-Number(keys.has('q')))*dt;let dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft')),dz=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'));if(dx||dz){const l=Math.hypot(dx,dz),x=(dx*Math.cos(cam)+dz*Math.sin(cam))/l,z=(-dx*Math.sin(cam)+dz*Math.cos(cam))/l;player.x+=x*player.speed*dt*(boostTime>0?2.5:1);player.z+=z*player.speed*dt*(boostTime>0?2.5:1);player.a=smoothAngle(player.a,Math.atan2(x,z),dt);}if(mouse.active){const sx=(mouse.x-W/2)/scale,sz=(mouse.y-H*.56)/(.62*scale);player.t=smoothAngle(player.t,Math.atan2(sx*Math.cos(cam)+sz*Math.sin(cam),-sx*Math.sin(cam)+sz*Math.cos(cam)),dt,22);}player.hp=Math.min(player.max,player.hp+player.regen*dt);player.cd-=dt;if((mouse.down||auto)&&player.cd<=0){fire(player);player.cd=player.reload;}spawnClock-=dt;if(spawnClock<=0){if(enemies.length<24)spawn();spawnClock=Math.max(.6,3-time/70);}for(const e of enemies){const d=Math.hypot(player.x-e.x,player.z-e.z);e.t=Math.atan2(player.x-e.x,player.z-e.z);e.a=smoothAngle(e.a,e.t,dt,6);if(d>10){e.x+=Math.sin(e.a)*dt*(2+Math.min(2,time/100));e.z+=Math.cos(e.a)*dt*(2+Math.min(2,time/100));}e.cd-=dt;if(d<35&&e.cd<0){fire(e,true);e.cd=Math.max(1.2,3-time/180);}if(d<2.5)player.hp-=12*dt;}
+time+=dt;boostCD=Math.max(0,boostCD-dt);boostTime=Math.max(0,boostTime-dt);cam+=(Number(keys.has('e'))-Number(keys.has('q')))*dt;let dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft')),dz=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'));if(dx||dz){const l=Math.hypot(dx,dz),x=(dx*Math.cos(cam)+dz*Math.sin(cam))/l,z=(-dx*Math.sin(cam)+dz*Math.cos(cam))/l;steerTank(player,Math.atan2(x,z),dt);const alignment=Math.max(0,Math.cos(Math.atan2(x,z)-player.a));player.driveSpeed=(player.driveSpeed||0)+(player.speed*(boostTime>0?2.5:1)*alignment-(player.driveSpeed||0))*(1-Math.exp(-5*dt));player.x+=Math.sin(player.a)*player.driveSpeed*dt;player.z+=Math.cos(player.a)*player.driveSpeed*dt;}else{player.driveSpeed=0;steerTank(player,player.a,dt);}if(mouse.active){const sx=(mouse.x-W/2)/scale,sz=(mouse.y-H*.56)/(.62*scale);player.t=smoothAngle(player.t,Math.atan2(sx*Math.cos(cam)+sz*Math.sin(cam),-sx*Math.sin(cam)+sz*Math.cos(cam)),dt,12);}player.hp=Math.min(player.max,player.hp+player.regen*dt);player.cd-=dt;if((mouse.down||auto)&&player.cd<=0){fire(player);player.cd=player.reload;}spawnClock-=dt;if(spawnClock<=0){if(enemies.length<24)spawn();spawnClock=Math.max(.6,3-time/70);}for(const e of enemies){const d=Math.hypot(player.x-e.x,player.z-e.z);e.t=Math.atan2(player.x-e.x,player.z-e.z);steerTank(e,e.t,dt);if(d>10){e.x+=Math.sin(e.a)*dt*(2+Math.min(2,time/100));e.z+=Math.cos(e.a)*dt*(2+Math.min(2,time/100));}e.cd-=dt;if(d<35&&e.cd<0){fire(e,true);e.cd=Math.max(1.2,3-time/180);}if(d<2.5)player.hp-=12*dt;}
 for(const t of movingTanks)animateDrive(t);
 for(const s of shells){s.life-=dt;const steps=Math.ceil(Math.hypot(s.vx,s.vz)*dt/.6);for(let k=0;k<steps&&s.life>0;k++){s.x+=s.vx*dt/steps;s.z+=s.vz*dt/steps;if(s.enemy){if(Math.hypot(s.x-player.x,s.z-player.z)<1.5){player.hp-=boostTime>0?5:14;s.life=0;burst(s.x,s.z,'#ff8853');}}else{const hit=enemies.find(e=>e.hp>0&&Math.hypot(s.x-e.x,s.z-e.z)<1.6);if(hit){s.life=0;burst(s.x,s.z,'#ffce77');for(const e of enemies)if(e===hit||(player.blast>0&&Math.hypot(e.x-hit.x,e.z-hit.z)<player.blast))e.hp-=e===hit?player.damage:player.damage*.65;}}}}
 for(const e of enemies)if(e.hp<=0){kills++;runXP+=25;const old=rank();profile.xp+=25;profile.points+=rank()-old;profile.kills++;profile.best=Math.max(profile.best,kills);save();burst(e.x,e.z,'#ee8e47',30);}enemies=enemies.filter(e=>e.hp>0);shells=shells.filter(s=>s.life>0);for(const p of particles){p.life-=dt;p.x+=p.vx*dt;p.z+=p.vz*dt;p.y+=p.vy*dt;p.vy-=15*dt;}particles=particles.filter(p=>p.life>0);if(player.hp<=0)die();else if(Math.floor(kills/2)>drafts)draft();}
@@ -84,7 +93,61 @@ function tank(t,enemy=false){
  const barrel=2.05-.62*recoil;
  box(origin.x+Math.sin(t.t)*barrel,1.78,origin.z+Math.cos(t.t)*barrel,.18,.18,2.8,t.t,'#b6a47d');
  box(origin.x+Math.sin(t.t)*.85,1.78,origin.z+Math.cos(t.t)*.85,.42,.36,.6,t.t,col);
- box(origin.x,2.08,origin.z,.65,.18,.65,t.t,'#786f53');part(-.7,2.45,-.9,.045,1.7,.045,'#333d32');if(!enemy)part(.65,1.4,1.82,.38,.09,.06,'#fff2bd');
+ box(origin.x,2.08,origin.z,.65,.18,.65,t.t,'#786f53');
+ // Hull fittings stay on the hull; turret fittings follow independent aim.
+ function turret(u,y,v,w,h,l,c=col,pitch=0){box(origin.x+u*Math.cos(t.t)+v*Math.sin(t.t),y,origin.z-u*Math.sin(t.t)+v*Math.cos(t.t),w,h,l,t.t,c,pitch);}
+ const trim=enemy?'#704438':'#958566',light=enemy?'#b7755d':'#dbc89f';
+ // Sloping glacis, driver hatch and three protected vision blocks.
+ part(0,1.24,1.35,2.12,.15,.85,light,a,-.16);
+ part(0,1.43,1.03,.52,.09,.46,trim);
+ for(let k=-1;k<=1;k++)part(k*.18,1.49,1.21,.13,.07,.09,'#365559');
+ // Split side skirts with hinges and front/rear mudguards.
+ for(const side of [-1,1]){
+  for(let k=0;k<6;k++){
+   part(side*1.18,.98,-1.48+k*.57,.14,.42,.52,k%2?col:light);
+   part(side*1.265,1.15,-1.48+k*.57,.045,.055,.18,trim);
+  }
+  part(side*1.12,.8,1.79,.63,.45,.08,trim,a,-.16);
+  part(side*1.12,.7,-1.83,.6,.52,.08,'#42463a');
+  part(side*.91,1.35,1.83,.3,.19,.13,trim);
+  part(side*.91,1.36,1.91,.19,.1,.035,'#f8e5b1');
+  part(side*.87,.98,-1.88,.18,.1,.045,'#a6382c');
+  part(side*.68,.8,1.89,.12,.16,.14,'#686650');
+ }
+ // Turbine intake and exhaust slats across the engine deck and rear.
+ for(let k=0;k<9;k++){
+  part(-.68+k*.17,1.445,-1.36,.065,.045,.67,'#454a3e');
+  part(-.76+k*.19,.91,-1.895,.075,.36,.035,'#494c3c');
+ }
+ // Turret cheek armour, ammunition bustle and stowage basket.
+ for(const side of [-1,1]){
+  turret(side*.82,1.77,.52,.38,.47,.86,light,-.1);
+  turret(side*.95,1.75,-.36,.12,.32,.65,trim);
+  turret(side*.76,1.93,-1.23,.08,.42,.72,trim);
+  turret(side*.73,1.83,-1.27,.38,.22,.44,'#72755a');
+  for(let k=0;k<3;k++)turret(side*1.035,1.87,.3-k*.16,.16,.17,.1,'#494c3e',-.4);
+ }
+ turret(0,1.72,-1.45,1.64,.09,.57,trim);
+ turret(0,1.97,-1.7,1.64,.065,.055,trim);
+ for(let k=-2;k<=2;k++)turret(k*.34,1.84,-1.7,.04,.28,.04,trim);
+ for(let k=-1;k<=1;k++)turret(k*.5,2.02,-.79,.46,.035,.37,light);
+ // Commander cupola, loader hatch, gunner sight and roof-mounted machine gun.
+ turret(.45,2.09,-.18,.55,.19,.58,trim);
+ turret(.45,2.21,-.18,.46,.06,.48,light);
+ turret(-.47,2.055,-.25,.5,.065,.55,light);
+ turret(-.5,2.22,.49,.35,.32,.31,trim);
+ turret(-.5,2.25,.655,.26,.15,.025,'#477b83');
+ turret(.45,2.33,.14,.08,.33,.09,'#3e473d');
+ turret(.45,2.5,.3,.19,.15,.45,'#485045');
+ turret(.45,2.51,.75,.065,.065,.53,'#303d35');
+ turret(.65,2.44,.22,.2,.23,.22,'#747655');
+ // Barrel thermal sleeve, fume extractor and dark muzzle opening.
+ turret(0,1.78,barrel+.15,.27,.27,.42,trim);
+ turret(0,1.78,barrel+1.36,.23,.23,.09,trim);
+ turret(0,1.78,barrel+1.41,.14,.14,.015,'#242b26');
+ // Grab handles and a second radio aerial.
+ for(const side of [-1,1]){turret(side*.6,2.065,-.66,.25,.045,.045,'#5e6250');turret(side*.7,2.105,-.66,.035,.11,.04,trim);}
+ turret(.72,2.68,-.91,.025,1.38,.025,'#333d32');part(-.7,2.45,-.9,.045,1.7,.045,'#333d32');if(!enemy)part(.65,1.4,1.82,.38,.09,.06,'#fff2bd');
 }
 function draw(){const ground=ctx.createLinearGradient(0,0,W,H);ground.addColorStop(0,'#a2a184');ground.addColorStop(.55,'#898e70');ground.addColorStop(1,'#747e64');ctx.fillStyle=ground;ctx.fillRect(0,0,W,H);faces=[];const px=player?player.x:0,pz=player?player.z:0;ctx.strokeStyle='#5e6b4f30';ctx.lineWidth=.7;for(let i=-14;i<=14;i++){let x=Math.floor(px/5)*5+i*5,z=Math.floor(pz/5)*5+i*5;let a=project(x,0,pz-70),b=project(x,0,pz+70);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();a=project(px-70,0,z);b=project(px+70,0,z);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}for(let i=-5;i<=5;i++)for(let j=-5;j<=5;j++){let gx=Math.floor(px/18)+i,gz=Math.floor(pz/18)+j,seed=Math.abs(Math.sin(gx*127.1+gz*311.7));if(seed>.7){let x=gx*18+seed*8,z=gz*18;box(x,.4,z,1+seed,.8,1.5,seed*5,'#777d63');}}const tanks=player?[player,...enemies]:[{x:0,z:0,a:-.6,t:-.25}];for(const t of tanks){const p=project(t.x,0,t.z);ctx.save();ctx.translate(p.x+8,p.y+8);ctx.scale(1,.58);const shadow=ctx.createRadialGradient(0,0,scale*.4,0,0,scale*2.1);shadow.addColorStop(0,'#18251e75');shadow.addColorStop(1,'#18251e00');ctx.fillStyle=shadow;ctx.beginPath();ctx.arc(0,0,scale*2.1,0,Math.PI*2);ctx.fill();ctx.restore();tank(t,t!==player&&!!player);}for(const s of shells)box(s.x,1.5,s.z,.16,.16,.7,Math.atan2(s.vx,s.vz),s.enemy?'#ff7650':'#fff0ad');faces.sort((a,b)=>a.d-b.d);for(const f of faces){ctx.beginPath();f.pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fillStyle=f.color;ctx.fill();ctx.fillStyle=`rgba(0,0,0,${1-f.shade})`;ctx.fill();}for(const p of particles){const v=project(p.x,Math.max(0,p.y),p.z);ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle=p.color;ctx.fillRect(v.x,v.y,scale*.22,scale*.22);}ctx.globalAlpha=1;for(const e of enemies){const p=project(e.x,3,e.z);ctx.fillStyle='#28332b';ctx.fillRect(p.x-17,p.y,34,4);ctx.fillStyle='#ef9b72';ctx.fillRect(p.x-17,p.y,34*e.hp/e.max,4);}const vignette=ctx.createRadialGradient(W/2,H/2,H*.25,W/2,H/2,W*.75);vignette.addColorStop(0,'#111b1200');vignette.addColorStop(1,'#101d2077');ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);if(state==='playing'&&mouse.active){ctx.strokeStyle='#fff0c7';ctx.beginPath();ctx.arc(mouse.x,mouse.y,10,0,Math.PI*2);ctx.moveTo(mouse.x-16,mouse.y);ctx.lineTo(mouse.x+16,mouse.y);ctx.moveTo(mouse.x,mouse.y-16);ctx.lineTo(mouse.x,mouse.y+16);ctx.stroke();}}
 function resize(){W=innerWidth;H=innerHeight;const d=Math.min(Math.max(devicePixelRatio||1,1.5),2);canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';scale=Math.min(W/52,H/33);}addEventListener('resize',resize);resize();

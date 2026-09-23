@@ -31,3 +31,14 @@ run('update(.1)');assert.ok(run('player.recoil')>0&&run('player.recoil')<1);
 run('update(.2)');assert.equal(run('player.recoil'),0);
 run('fire(enemies[0],true);draw()');assert.equal(run('enemies[0].recoil'),1);
 console.log('PASS: movement-driven tracks, stationary tracks, player/enemy recoil, recovery, animated geometry rendering.');
+run('globalThis.steeringTest={a:0};steerTank(steeringTest,Math.PI/2,1/60)');
+assert.ok(run('steeringTest.a')>0&&run('steeringTest.a')<.01,'Turn starts gradually');
+run('for(let i=0;i<180;i++)steerTank(steeringTest,Math.PI/2,1/60)');
+assert.ok(Math.abs(run('steeringTest.a')-Math.PI/2)<.01,'Turn settles on target');
+run('steeringTest={a:Math.PI-.01};steerTank(steeringTest,-Math.PI+.1,1/60)');
+assert.ok(run('steeringTest.a')>Math.PI-.01,'Turn crosses angle boundary along shortest arc');
+run('start();cam=0;keys.add("d");update(1/60);keys.clear();draw()');
+assert.ok(Math.abs(run('player.x'))<Math.abs(run('player.z')),'Movement follows hull through the turn');
+assert.ok(run('faces.every(f=>f.pts.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&Number.isFinite(p.d)))'),'Detailed mesh vertices remain finite');
+console.log('PASS: gradual steering, target settling, angle wrapping, hull-aligned movement and detailed geometry.');
+
