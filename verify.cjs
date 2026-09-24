@@ -46,4 +46,25 @@ assert.ok(run('faces.length<playerFaces*.4'),'Enemy geometry stays substantially
 assert.equal(run('visible(player.x+10000,player.z+10000)'),false,'Offscreen tanks are culled');
 assert.equal(run('shadeColor("#ffffff",1)'),'rgb(255,255,255)');
 console.log('PASS: enemy geometry budget, offscreen culling and cached shading.');
+run('menu();profile.xp=0;rebirthMenu()');
+assert.equal(run('performRebirth()'),false,'Rebirth locked below required level');
+run('profile.xp=1800;profile.points=4;profile.levels=[2,3,1];profile.best=42;profile.kills=99;rebirthMenu();menu()');
+assert.equal(run('profile.xp'),1800,'Cancelling preserves progress');
+run('rebirthMenu();performRebirth()');
+assert.equal(run('profile.rebirths'),1);
+assert.equal(run('profile.xp'),0);
+assert.equal(run('profile.points'),0);
+assert.equal(run('profile.levels.join()'),'0,0,0');
+assert.equal(run('profile.best'),42);
+assert.equal(run('profile.kills'),99);
+assert.equal(run('rebirthRequirement()'),15);
+assert.equal(run('performRebirth()'),false,'Duplicate confirmation cannot rebirth again');
+run('crew=1;start();earnXP(25)');
+assert.equal(run('player.max'),132);
+assert.equal(run('player.damage'),44);
+assert.equal(run('profile.xp'),30);
+const reloaded=vm.createContext({...sandbox});
+vm.runInContext(fs.readFileSync('tank-play.html','utf8').match(/<script>([\s\S]*?)<\/script>/)[1],reloaded);
+assert.equal(vm.runInContext('profile.rebirths',reloaded),1,'Rebirth survives reload');
+console.log('PASS: rebirth unlock, cancellation, resets, retained records, bonuses, repeat protection and save reload.');
 

@@ -18,6 +18,10 @@ An offline, single-file 3D tank survival game. You can also download `tank-play.
 
 Choose a crew, earn persistent commander XP, and select one of three upgrades every two kills. Progress is saved in your browser's local storage.
 
+### Rebirth
+
+Use **Rebirth** on the main menu at commander level 10. Each rebirth adds +10% starting armour and damage and +20% earned XP. Confirmation resets commander XP, upgrade points, and motor pool levels; lifetime kills, best score, and rebirth bonuses remain. The next rebirth requires five more commander levels than the previous one.
+
 Run the gameplay checks with `node verify.cjs`.
 
 Canonical repository: https://github.com/chibachaseygaming-arch/Tank-Simulator
