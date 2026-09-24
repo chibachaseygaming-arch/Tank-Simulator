@@ -22,6 +22,8 @@ Choose **Deploy FPS Infantry** to play on foot with a first-person anti-armour r
 
 The **Feedback** button opens your email application addressed to **chibachaseygaming@gmail.com**; it does not send anything automatically.
 
+FPS enemies are animated soldiers with helmets, vests, and rifles. Your first-person rifle is a perspective-rendered 3D model with a magazine, optic, hands, walking motion, and recoil. Soldier hitboxes match their smaller size. Abrams mode continues to use tanks.
+
 Browser regression checks: install Playwright and Microsoft Edge, then run `node browser-test.cjs` (or set `PLAYWRIGHT_MODULE` to your installed Playwright module path).
 
 Choose a crew, earn persistent commander XP, and select one of three upgrades every two kills. Progress is saved in your browser's local storage.
