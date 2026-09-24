@@ -1,6 +1,10 @@
 # Iron Dune — Tank Simulator
 
-An offline, single-file 3D tank survival game. Download `tank-play.html` and open it in a desktop browser.
+## [▶ PLAY IRON DUNE](https://chibachaseygaming-arch.github.io/Tank-Simulator/)
+
+Click the link above to play in your browser. Desktop keyboard and mouse recommended.
+
+An offline, single-file 3D tank survival game. You can also download `tank-play.html` and open it in a desktop browser.
 
 ## Controls
 
@@ -17,3 +21,7 @@ Choose a crew, earn persistent commander XP, and select one of three upgrades ev
 Run the gameplay checks with `node verify.cjs`.
 
 Canonical repository: https://github.com/chibachaseygaming-arch/Tank-Simulator
+
+## Website setup (repository owner, once only)
+
+In **Settings → Pages**, select **Deploy from a branch**, choose **main** and **/ (root)**, then click **Save**. GitHub publishes the game at the Play link above. Future updates pushed to main will update the website automatically.
