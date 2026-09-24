@@ -14,7 +14,7 @@ run('enemies[0].hp=0;enemies[1].hp=0;update(.01)');
 assert.equal(run('state'),'upgrade');
 assert.equal(run('choices.length'),3);
 assert.equal(run('profile.xp'),50);
-run('pick(0)');assert.equal(run('state'),'playing');
+run('pick(choices.findIndex(i=>upgrades[i].name!=="Battlefield salvage"))');assert.equal(run('state'),'playing');
 run('pause()');assert.equal(run('state'),'paused');
 run('resume();player.hp=-10;update(.01)');assert.equal(run('state'),'dead');
 run('menu();start()');assert.equal(run('kills'),0);assert.equal(run('profile.xp'),50);

@@ -16,6 +16,14 @@ An offline, single-file 3D tank survival game. You can also download `tank-play.
 - Escape: pause
 - 1 / 2 / 3: select a run upgrade
 
+### FPS infantry and feedback
+
+Choose **Deploy FPS Infantry** to play on foot with a first-person anti-armour rifle. WASD moves relative to your view, mouse movement aims through unlimited horizontal rotations, hold left click fires, and Space sprints. Mouse capture hides the cursor; Escape releases it and pauses. Resume or select an upgrade to capture it again. If capture is blocked, click the battlefield to retry. Choose **Deploy Abrams** on the main menu to return to tanks. Both modes share commander XP, upgrades, and rebirth progression.
+
+The **Feedback** button opens your email application addressed to **chibachaseygaming@gmail.com**; it does not send anything automatically.
+
+Browser regression checks: install Playwright and Microsoft Edge, then run `node browser-test.cjs` (or set `PLAYWRIGHT_MODULE` to your installed Playwright module path).
+
 Choose a crew, earn persistent commander XP, and select one of three upgrades every two kills. Progress is saved in your browser's local storage.
 
 ### Rebirth
