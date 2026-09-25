@@ -42,6 +42,8 @@ In **Settings → Pages**, select **Deploy from a branch**, choose **main** and 
 
 ### Infantry loadouts and battleground
 
+Before launching FPS mode, the customization sidebar lets you choose **Assault**, **Recon**, **Medic**, or **Heavy**, then **Easy**, **Normal**, **Hard**, or **Nightmare**, plus your weapon category and weapon. Class bonuses are shown before deployment. Difficulty changes enemy health, damage, attack cadence, starting enemy count and reinforcement rate. Selections save between sessions and do not change tank mode. Combat starts only when you press **Deploy to Battleground**.
+
 Infantry opens a loadout screen before deployment. All 100 named weapons are available immediately across assault rifles, carbines, SMGs, pistols, heavy pistols, shotguns, marksman rifles, sniper rifles, machine guns, and launchers. Each weapon has its own damage, fire rate and range; shotguns fire multiple pellets and launchers deal area damage. Class-based 3D weapon models vary in length, width, stock, scope and magazine.
 
 Choose a uniform, skin tone, headgear and weapon finish with a soldier preview. Choices save locally; first-person sleeves, hands and weapon finish reflect the loadout. Infantry fights in a 3D compound with streets, buildings, containers, barriers and crates. Cover blocks movement and gunfire. Infantry has no three-choice upgrade interruptions.
