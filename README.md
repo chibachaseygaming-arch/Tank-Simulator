@@ -15,6 +15,7 @@ An offline, single-file 3D tank survival game. You can also download `tank-play.
 - F: toggle automatic fire
 - Escape: pause
 - 1 / 2 / 3: select a run upgrade
+- FPS only: hold right mouse button to aim down sights; release to return to hip fire. All 100 weapons support aiming, with 2.5× marksman scopes, 4× sniper scopes, 1.6× launcher sights and 1.5× sights for other weapons. Mouse sensitivity reduces while zoomed; left click still fires.
 
 ### FPS infantry and feedback
 

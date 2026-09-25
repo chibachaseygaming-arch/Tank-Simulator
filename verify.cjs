@@ -98,4 +98,10 @@ assert.equal(vm.runInContext('loadout.difficulty',settingsReload),3);
 run('mode="tank";start()');assert.equal(run('enemies.length'),4);
 assert.equal(run('difficultySettings().damage'),1,'Infantry difficulty does not affect tanks');
 console.log('PASS: difficulty enemy stats/count, four soldier classes, saved class/difficulty and tank isolation.');
+run('mode="infantry";for(let i=0;i<100;i++){loadout.weapon=i;start();aimHeld=true;updateAim(1);if(aimZoom()<=1)throw Error("Missing weapon zoom");draw();if(viewModel)throw Error("Projection mode leaked");aimHeld=false;updateAim(1);if(aimBlend!==0)throw Error("Aim did not release");}');
+run('loadout.weapon=70;start();aimHeld=true;updateAim(1)');
+assert.equal(run('aimZoom()'),4);
+run('clearInput()');assert.equal(run('aimBlend'),0);
+run('mode="tank";aimHeld=true;updateAim(1)');assert.equal(run('aimBlend'),0);
+console.log('PASS: ADS zoom/render/release on all 100 weapons, sniper magnification, input reset and tank isolation.');
 
