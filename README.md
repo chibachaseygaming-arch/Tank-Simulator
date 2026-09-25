@@ -17,6 +17,9 @@ An offline, single-file 3D tank survival game. You can also download `tank-play.
 - 1 / 2 / 3: select a run upgrade
 - FPS only: hold right mouse button to aim down sights; release to return to hip fire. All 100 weapons support aiming, with 2.5× marksman scopes, 4× sniper scopes, 1.6× launcher sights and 1.5× sights for other weapons. Mouse sensitivity reduces while zoomed; left click still fires.
 - FPS only: **H** toggles a clean recording view, hiding the HUD, control hints and hip-fire crosshair. Scope sights and pause menus remain usable. This changes the view; use your recording software to capture footage.
+- **R** reloads your FPS weapon; empty magazines reload automatically. Every weapon class has its own magazine capacity and reload duration. Reserve ammunition is unlimited. **M** toggles the synthesized combat sounds.
+
+Infantry headshots deal 1.6× damage. Every third defeated soldier drops a supply crate that restores 30 health and refills the current magazine. Enemies strafe, move around blocked routes, and only fire when they have line of sight. Damage vignette, kill confirmations and the ammunition HUD provide combat feedback; clean recording view hides HUD elements.
 
 FPS combat includes stylized blood impacts, short bleeding damage, fading blood pools and fallen soldiers. Aftermath effects are capped and expire to keep rendering costs bounded. The battleground has warm sky lighting and softer impact particles.
 

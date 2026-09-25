@@ -114,4 +114,16 @@ assert.equal(run('fallenSoldiers.length'),0);
 assert.equal(run('bloodPools.length'),0);
 run('start()');assert.equal(run('fallenSoldiers.length+bloodPools.length'),0);
 console.log('PASS: blood impacts, bleeding damage, bounded aftermath, effect expiry and run reset.');
+run('mode="infantry";loadout.weapon=0;start();enemies=[];globalThis.initialAmmo=player.ammo;fire(player)');
+assert.equal(run('player.ammo'),run('initialAmmo-1'));
+run('beginReload();globalThis.reloadAmmo=player.ammo;fire(player)');
+assert.equal(run('player.ammo'),run('reloadAmmo'),'Cannot fire during reload');
+run('updateInfantryCombat(player.reloadDuration)');assert.equal(run('player.ammo'),run('player.magazine'));
+run('player.ammo=0;fire(player)');assert.ok(run('player.reloadTimer>0'),'Empty magazine auto reloads');
+run('player.hp=50;pickups=[{x:player.x,z:player.z,life:10}];updateInfantryCombat(.01)');
+assert.equal(run('player.hp'),80);assert.equal(run('player.reloadTimer'),0);
+run('globalThis.enemyTest={x:30,z:0,a:0,t:-Math.PI/2,flank:1};');
+assert.equal(run('moveSoldier(enemyTest,.01,30)'),false,'Building breaks enemy line of sight');
+run('for(let i=0;i<100;i++){loadout.weapon=i;start();player.ammo=0;beginReload();updateInfantryCombat(player.reloadDuration);if(player.ammo!==player.magazine)throw Error("Reload failed");}');
+console.log('PASS: ammunition, reload lockout, automatic reload, supply healing, enemy cover checks and all 100 weapon reloads.');
 
