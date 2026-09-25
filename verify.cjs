@@ -67,4 +67,18 @@ const reloaded=vm.createContext({...sandbox});
 vm.runInContext(fs.readFileSync('tank-play.html','utf8').match(/<script>([\s\S]*?)<\/script>/)[1],reloaded);
 assert.equal(vm.runInContext('profile.rebirths',reloaded),1,'Rebirth survives reload');
 console.log('PASS: rebirth unlock, cancellation, resets, retained records, bonuses, repeat protection and save reload.');
+assert.equal(run('weapons.length'),100);
+assert.equal(run('new Set(weapons.map(w=>w.name)).size'),100);
+run('mode="infantry";for(let i=0;i<100;i++){loadout.weapon=i;start();if(player.damage!==weapons[i].damage*rebirthPower()||player.reload!==weapons[i].interval)throw Error("Weapon stats mismatch");drawWeapon();}');
+run('enemies=[{x:0,z:12,a:0,t:0,hp:0,cd:99},{x:0,z:14,a:0,t:0,hp:0,cd:99}];update(.01)');
+assert.equal(run('state'),'playing');
+assert.equal(run('drafts'),0);
+run('globalThis.collider={x:13,z:0};moveFoot(collider,20,0)');
+assert.equal(run('collider.x'),13);
+assert.ok(run('coverDistance(0,1.7,0,1,0,0,100)')<20);
+run('loadout.weapon=73;loadout.uniform=2;loadout.skin=3;loadout.helmet=2;loadout.finish=1;saveLoadout()');
+const loadoutReload=vm.createContext({...sandbox});
+vm.runInContext(fs.readFileSync('tank-play.html','utf8').match(/<script>([\s\S]*?)<\/script>/)[1],loadoutReload);
+assert.equal(vm.runInContext('JSON.stringify(loadout)',loadoutReload),run('JSON.stringify(loadout)'));
+console.log('PASS: all 100 weapons equip/render with correct stats, no infantry draft, cover collision and saved customization.');
 

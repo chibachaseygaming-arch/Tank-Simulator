@@ -18,7 +18,7 @@ An offline, single-file 3D tank survival game. You can also download `tank-play.
 
 ### FPS infantry and feedback
 
-Choose **Deploy FPS Infantry** to play on foot with a first-person anti-armour rifle. WASD moves relative to your view, mouse movement aims through unlimited horizontal rotations, hold left click fires, and Space sprints. Mouse capture hides the cursor; Escape releases it and pauses. Resume or select an upgrade to capture it again. If capture is blocked, click the battlefield to retry. Choose **Deploy Abrams** on the main menu to return to tanks. Both modes share commander XP, upgrades, and rebirth progression.
+Choose **Deploy FPS Infantry** to play on foot with a first-person anti-armour rifle. WASD moves relative to your view, mouse movement aims through unlimited horizontal rotations, hold left click fires, and Space sprints. Mouse capture hides the cursor; Escape releases it and pauses. Resume to capture it again. If capture is blocked, click the battlefield to retry. Choose **Deploy Abrams** on the main menu to return to tanks. Both modes share commander XP and rebirth progression. Only tank mode pauses every two kills for run upgrades.
 
 The **Feedback** button opens your email application addressed to **chibachaseygaming@gmail.com**; it does not send anything automatically.
 
@@ -39,3 +39,9 @@ Canonical repository: https://github.com/chibachaseygaming-arch/Tank-Simulator
 ## Website setup (repository owner, once only)
 
 In **Settings → Pages**, select **Deploy from a branch**, choose **main** and **/ (root)**, then click **Save**. GitHub publishes the game at the Play link above. Future updates pushed to main will update the website automatically.
+
+### Infantry loadouts and battleground
+
+Infantry opens a loadout screen before deployment. All 100 named weapons are available immediately across assault rifles, carbines, SMGs, pistols, heavy pistols, shotguns, marksman rifles, sniper rifles, machine guns, and launchers. Each weapon has its own damage, fire rate and range; shotguns fire multiple pellets and launchers deal area damage. Class-based 3D weapon models vary in length, width, stock, scope and magazine.
+
+Choose a uniform, skin tone, headgear and weapon finish with a soldier preview. Choices save locally; first-person sleeves, hands and weapon finish reflect the loadout. Infantry fights in a 3D compound with streets, buildings, containers, barriers and crates. Cover blocks movement and gunfire. Infantry has no three-choice upgrade interruptions.
