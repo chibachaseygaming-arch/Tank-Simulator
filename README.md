@@ -4,6 +4,10 @@
 
 Click the link above to play in your browser. Desktop keyboard and mouse recommended.
 
+### [🎬 Watch Trailer 1](https://chibachaseygaming-arch.github.io/Tank-Simulator/media/trailer-1.mp4)
+
+[View or download the original trailer on GitHub](media/trailer-1.mp4) · MP4, approximately 87 MiB.
+
 An offline, single-file 3D tank survival game. You can also download `tank-play.html` and open it in a desktop browser.
 
 ## Controls
